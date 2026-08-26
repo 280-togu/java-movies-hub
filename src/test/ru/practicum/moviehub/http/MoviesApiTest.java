@@ -37,7 +37,7 @@ public class MoviesApiTest {
     }
 
     @BeforeEach
-     void beforeEach() {
+    void beforeEach() {
         store.clearMovies();
     }
 
@@ -100,6 +100,7 @@ public class MoviesApiTest {
         assertTrue(body.contains("Кристофер Нолан"));
         assertTrue(body.contains("2014"));
     }
+
     @Test
     void postMovies_whenValidMovie_returnsCreatedMovie() throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
@@ -133,6 +134,7 @@ public class MoviesApiTest {
         assertTrue(body.contains("\"year\":2010"));
         assertTrue(body.contains("\"id\":"));
     }
+
     @Test
     void postMovies_whenTitleIsEmpty_returns422() throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
@@ -243,6 +245,7 @@ public class MoviesApiTest {
 
         assertEquals(422, response.statusCode());
     }
+
     @Test
     void postMovies_whenTitleTooLong_returnsValidationError() throws Exception {
         StringBuilder titleBuilder = new StringBuilder();
@@ -273,6 +276,7 @@ public class MoviesApiTest {
         assertTrue(body.contains("Ошибка валидации"));
         assertTrue(body.contains("название не должно превышать 100 символов"));
     }
+
     @Test
     void postMovies_whenYearTooEarly_returnsValidationError() throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
@@ -295,6 +299,7 @@ public class MoviesApiTest {
         assertTrue(body.contains("Ошибка валидации"));
         assertTrue(body.contains("год должен быть между 1888 и 2027"));
     }
+
     @Test
     void postMovies_whenWrongContentType_returnsUnsupportedMediaType() throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
@@ -312,6 +317,7 @@ public class MoviesApiTest {
 
         assertEquals(415, response.statusCode());
     }
+
     @Test
     void postMovies_whenInvalidJson_returnsValidationError() throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
@@ -333,6 +339,7 @@ public class MoviesApiTest {
 
         assertTrue(body.contains("Ошибка валидации"));
     }
+
     @Test
     void getMovieById_whenMovieExists_returnsMovie() throws Exception {
         Movie movie = new Movie(
@@ -365,6 +372,7 @@ public class MoviesApiTest {
         assertTrue(body.contains("\"director\":\"Кристофер Нолан\""));
         assertTrue(body.contains("\"year\":2010"));
     }
+
     @Test
     void deleteMovie_whenMovieExists_returns204() throws Exception {
         Movie movie = new Movie(
@@ -428,6 +436,7 @@ public class MoviesApiTest {
 
         assertTrue(body.contains("некорректный ID фильма"));
     }
+
     @Test
     void getMoviesByYear_whenMoviesExist_returnsMoviesOfGivenYear() throws Exception {
         store.addMovie(new Movie("Начало", "Кристофер Нолан", 2010));
@@ -493,6 +502,7 @@ public class MoviesApiTest {
         assertTrue(body.contains("\"details\""));
         assertTrue(body.contains("некорректный параметр year"));
     }
+
     @Test
     void unsupportedMethod_returns405() throws Exception {
         HttpRequest request = HttpRequest.newBuilder()

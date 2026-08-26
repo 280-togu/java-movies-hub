@@ -38,9 +38,11 @@ public class Movie {
     public void setYear(int year) {
         this.year = year;
     }
+
     public void setId(int id) {
         this.id = id;
     }
+
     public int getId() {
         return id;
     }

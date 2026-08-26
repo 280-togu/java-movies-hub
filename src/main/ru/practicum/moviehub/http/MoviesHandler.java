@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpExchange;
 import ru.practicum.moviehub.api.ErrorResponse;
 import ru.practicum.moviehub.model.Movie;
 import ru.practicum.moviehub.store.MoviesStore;
+
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.Year;
@@ -52,7 +53,7 @@ public class MoviesHandler extends BaseHttpHandler {
                     List<Movie> movies = moviesStore.getMovies().stream().filter(movie -> movie.getYear() == year).toList();
                     sendJson(ex, 200, gson.toJson(movies));
                     return;
-                }catch (NumberFormatException e){
+                } catch (NumberFormatException e) {
                     ErrorResponse errorResponse = new ErrorResponse("Ошибка валидации", List.of("некорректный параметр year"));
                     sendJson(ex, 400, gson.toJson(errorResponse));
                     return;
@@ -60,21 +61,21 @@ public class MoviesHandler extends BaseHttpHandler {
 
             }
             if (pathParts.length == 3) {
-               try {
-                   int movieId = Integer.parseInt(pathParts[2]);
-                   Movie movie = moviesStore.getMovieById(movieId);
-                   if (movie == null) {
-                       ErrorResponse errorResponse = new ErrorResponse("Ошибка валидации", List.of("фильм не найден"));
-                       sendJson(ex, 404, gson.toJson(errorResponse));
-                       return;
-                   } else {
-                       sendJson(ex, 200, gson.toJson(movie));
-                   }
-               } catch (NumberFormatException e) {
-                   ErrorResponse errorResponse = new ErrorResponse("Ошибка валидации", List.of("некорректный ID фильма"));
-                   sendJson(ex, 400, gson.toJson(errorResponse));
-                   return;
-               }
+                try {
+                    int movieId = Integer.parseInt(pathParts[2]);
+                    Movie movie = moviesStore.getMovieById(movieId);
+                    if (movie == null) {
+                        ErrorResponse errorResponse = new ErrorResponse("Ошибка валидации", List.of("фильм не найден"));
+                        sendJson(ex, 404, gson.toJson(errorResponse));
+                        return;
+                    } else {
+                        sendJson(ex, 200, gson.toJson(movie));
+                    }
+                } catch (NumberFormatException e) {
+                    ErrorResponse errorResponse = new ErrorResponse("Ошибка валидации", List.of("некорректный ID фильма"));
+                    sendJson(ex, 400, gson.toJson(errorResponse));
+                    return;
+                }
             }
 
         }
@@ -111,7 +112,8 @@ public class MoviesHandler extends BaseHttpHandler {
         if (method.equalsIgnoreCase("DELETE")) {
             String path = ex.getRequestURI().getPath();
             String[] pathParts = path.split("/");
-            try { int movieId = Integer.parseInt(pathParts[2]);
+            try {
+                int movieId = Integer.parseInt(pathParts[2]);
                 Movie deletedMovie = moviesStore.deleteMovie(movieId);
                 if (deletedMovie == null) {
                     ErrorResponse errorResponse = new ErrorResponse("Ошибка валидации", List.of("фильм не найден"));
