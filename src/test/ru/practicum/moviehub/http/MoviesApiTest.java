@@ -521,4 +521,67 @@ public class MoviesApiTest {
 
         assertTrue(body.contains("\"error\""));
     }
+
+    @Test
+    void addMovie_withoutContentType_returnsUnsupportedMediaType() throws Exception {
+        String json = """
+                {
+                    "title": "Начало",
+                    "director": "Кристофер Нолан",
+                    "year": 2010
+                }
+                """;
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE + "/movies"))
+                .POST(HttpRequest.BodyPublishers.ofString(json, StandardCharsets.UTF_8))
+                .build();
+
+        HttpResponse<String> response = client.send(
+                request,
+                HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8)
+        );
+
+        assertEquals(415, response.statusCode());
+    }
+
+    @Test
+    void addMovie_withContentTypeAndCharset_returnsCreated() throws Exception {
+        String json = """
+                {
+                    "title": "Начало",
+                    "director": "Кристофер Нолан",
+                    "year": 2010
+                }
+                """;
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE + "/movies"))
+                .header("Content-Type", "application/json; charset=UTF-8")
+                .POST(HttpRequest.BodyPublishers.ofString(json, StandardCharsets.UTF_8))
+                .build();
+
+        HttpResponse<String> response = client.send(
+                request,
+                HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8)
+        );
+
+        assertEquals(201, response.statusCode());
+        assertTrue(response.body().contains("\"title\":\"Начало\""));
+    }
+
+    @Test
+    void deleteMovie_withoutId_returnsBadRequest() throws Exception {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE + "/movies"))
+                .DELETE()
+                .build();
+
+        HttpResponse<String> response = client.send(
+                request,
+                HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8)
+        );
+
+        assertEquals(400, response.statusCode());
+    }
 }

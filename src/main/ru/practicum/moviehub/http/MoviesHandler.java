@@ -80,13 +80,23 @@ public class MoviesHandler extends BaseHttpHandler {
 
         }
         if (method.equalsIgnoreCase("POST")) {
-            if (!"application/json".equalsIgnoreCase(contentType)) {
+            if (contentType == null || !contentType.startsWith("application/json")) {
                 ErrorResponse errorResponse = new ErrorResponse("Ошибка валидации", List.of("неподдерживаемый Content-Type"));
                 sendJson(ex, 415, gson.toJson(errorResponse));
                 return;
             }
             try {
                 Movie movie = gson.fromJson(new InputStreamReader(ex.getRequestBody(), StandardCharsets.UTF_8), Movie.class);
+                if (movie == null) {
+                    ErrorResponse errorResponse = new ErrorResponse("Ошибка валидации", List.of("тело запроса не должно быть пустым"));
+                    sendJson(ex, 422, gson.toJson(errorResponse));
+                    return;
+                }
+                if (movie.getTitle() == null) {
+                    ErrorResponse errorResponse = new ErrorResponse("Ошибка валидации", List.of("название не должно быть пустым"));
+                    sendJson(ex, 422, gson.toJson(errorResponse));
+                    return;
+                }
                 if (movie.getTitle().trim().isEmpty()) {
                     ErrorResponse errorResponse = new ErrorResponse("Ошибка валидации", List.of("название не должно быть пустым"));
                     sendJson(ex, 422, gson.toJson(errorResponse));
@@ -112,6 +122,11 @@ public class MoviesHandler extends BaseHttpHandler {
         if (method.equalsIgnoreCase("DELETE")) {
             String path = ex.getRequestURI().getPath();
             String[] pathParts = path.split("/");
+            if (!(pathParts.length == 3)) {
+                ErrorResponse errorResponse = new ErrorResponse("Ошибка валидации", List.of("некорректный путь"));
+                sendJson(ex, 400, gson.toJson(errorResponse));
+                return;
+            }
             try {
                 int movieId = Integer.parseInt(pathParts[2]);
                 Movie deletedMovie = moviesStore.deleteMovie(movieId);
